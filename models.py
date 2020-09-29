@@ -3,10 +3,13 @@
 import numpy as np;
 import tensorflow as tf;
 
-def PropHazardsModel(dim_num, class_num):
+def PropHazardsModel(dim_num, class_num, layers = [500,500,500]):
 
   inputs = tf.keras.Input((dim_num,)); # inputs.shape = (batch, dim_num)
-  results = tf.keras.layers.Dense(units = class_num, use_bias = True)(inputs); # results.shape = (batch, class_num)
+  results = inputs;
+  for layer in layers:
+    results = tf.keras.layers.Dense(units = layer)(results); # results.shape = (batch, layer)
+  results = tf.keras.layers.Dense(units = class_num)(results); # results.shape = (batch, class_num)
   results = tf.keras.layers.Lambda(lambda x: tf.math.exp(x))(results); # results.shape = (batch, class_num)
   def cumsum(i, _in, _out):
     s = tf.math.reduce_sum(_in[..., i:], axis = -1, keepdims = True); # sub.shape = (batch, 1)
