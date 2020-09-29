@@ -29,7 +29,7 @@ def main():
     data, labels = next(trainset);
     with tf.GradientTape() as tape:
       pred = phm(data); # pred.shape = (batch, class_num)
-      loglikelihoods = ll(pred, labels); # loglikelihoods.shape = (batch)
+      loglikelihoods = ll([pred, labels]); # loglikelihoods.shape = (batch)
       loss = -tf.math.reduce_mean(loglikelihoods);
     avg_loss.update_state(loss);
     if tf.equal(optimizer.iterations % 10, 0):
@@ -46,7 +46,7 @@ def main():
       for i in range(10):
         data, labels = next(testset);
         pred = phm(data); # pred.shape = (batch, class_num)
-        loglikelihoods = ll(pred, labels); # loglikelihoods.shape = (batch)
+        loglikelihoods = ll([pred, labels]); # loglikelihoods.shape = (batch)
         loss = -tf.math.reduce_mean(loglikelihoods);
         test_loss.update_state(loss);
       with log.as_default():
@@ -55,4 +55,5 @@ def main():
     
 if __name__ == "__main__":
 
+  assert tf.executing_eagerly();
   main();
