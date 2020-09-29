@@ -21,7 +21,7 @@ def LogLikelihood(class_num):
 
   inputs = tf.keras.Input((class_num)); # inputs.shape = (batch, class_num)
   labels = tf.keras.Input((), dtype = tf.int64); # labels.shape = (batch)
-  results = tf.keras.layers.Lambda(lambda x: tf.math.log(inputs))(inputs); # results.shape = (batch, class_num)
+  results = tf.keras.layers.Lambda(lambda x: tf.math.log(x))(inputs); # results.shape = (batch, class_num)
   onehot = tf.keras.layers.Lambda(lambda x, c: tf.one_hot(x, c, axis = -1), arguments = {'c': class_num})(labels); # labels.shape = (batch, class_num)
   results = tf.keras.layers.Lambda(lambda x: tf.math.reduce_sum(x[0] * x[1], axis = -1))([results, onehot]); # results.shape = (batch)
   return tf.keras.Model(inputs = (inputs, labels), outputs = results);
