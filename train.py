@@ -38,6 +38,9 @@ def main():
       if avg_loss.result() < 0.01: break;
       avg_loss.reset_states();
     grads = tape.gradient(loss, phm.trainable_variables);
+    if tf.math.reduce_any([tf.math.reduce_any(tf.math.logical_or(tf.math.is_nan(grad), tf.math.is_inf(grad))) for grad in grads]) == True:
+      print('detected nan in grads, skip current iteration');
+      continue;
     optimizer.apply_gradients(zip(grads, phm.trainable_variables));
     if tf.equal(optimizer.iterations % 10, 0):
       checkpoint.save(join('checkpoints', 'ckpt'));

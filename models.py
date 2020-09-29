@@ -6,7 +6,7 @@ import tensorflow as tf;
 def PropHazardsModel(dim_num, class_num):
 
   inputs = tf.keras.Input((dim_num,)); # inputs.shape = (batch, dim_num)
-  results = tf.keras.layers.Dense(units = class_num, use_bias = False)(inputs); # results.shape = (batch, class_num)
+  results = tf.keras.layers.Dense(units = class_num, use_bias = True)(inputs); # results.shape = (batch, class_num)
   results = tf.keras.layers.Lambda(lambda x: tf.math.exp(x))(results); # results.shape = (batch, class_num)
   def cumsum(i, _in, _out):
     s = tf.math.reduce_sum(_in[..., i:], axis = -1, keepdims = True); # sub.shape = (batch, 1)
@@ -21,7 +21,7 @@ def LogLikelihood(class_num):
 
   inputs = tf.keras.Input((class_num)); # inputs.shape = (batch, class_num)
   labels = tf.keras.Input((), dtype = tf.int64); # labels.shape = (batch)
-  results = tf.keras.layers.Lambda(lambda x: tf.math.log(x))(inputs); # results.shape = (batch, class_num)
+  results = tf.keras.layers.Lambda(lambda x: tf.math.log(x + 1e-50))(inputs); # results.shape = (batch, class_num)
   onehot = tf.keras.layers.Lambda(lambda x, c: tf.one_hot(x, c, axis = -1), arguments = {'c': class_num})(labels); # labels.shape = (batch, class_num)
   results = tf.keras.layers.Lambda(lambda x: tf.math.reduce_sum(x[0] * x[1], axis = -1))([results, onehot]); # results.shape = (batch)
   return tf.keras.Model(inputs = (inputs, labels), outputs = results);
