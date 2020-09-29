@@ -3,7 +3,6 @@
 from os import mkdir;
 from os.path import join, exists;
 import tensorflow as tf;
-import tensorflow_probability as tfp;
 from models import PropHazardsModel, LogLikelihood;
 from create_datasets import parse_function;
 
