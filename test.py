@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from os.path import join;
 import tensorflow as tf;
 from models import PropHazardsModel, LogLikelihood;
 from create_datasets import parse_function;

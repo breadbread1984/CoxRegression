@@ -11,12 +11,10 @@ def PropHazardsModel(dim_num, class_num, layers = [500,500,500]):
     results = tf.keras.layers.Dense(units = layer)(results); # results.shape = (batch, layer)
   results = tf.keras.layers.Dense(units = class_num)(results); # results.shape = (batch, class_num)
   results = tf.keras.layers.Lambda(lambda x: tf.math.exp(x))(results); # results.shape = (batch, class_num)
-  def cumsum(i, _in, _out):
-    s = tf.math.reduce_sum(_in[..., i:], axis = -1, keepdims = True); # sub.shape = (batch, 1)
-    _out = tf.concat([_out, s], axis = -1); # _out.shape = (batch, i)
-    i += 1;
-    return i, _in, _out;
-  s = tf.keras.layers.Lambda(lambda x: tf.while_loop(lambda i, _in, _out: i < _in.shape[-1], cumsum, loop_vars = [0, x, tf.zeros((tf.shape(x)[0], 0), dtype = tf.float32)], shape_invariants = [tf.TensorShape([]), x.shape, tf.TensorShape([x.shape[0], None])])[2])(results); # s.shape = (batch, class_num)
+  s = tf.keras.layers.Lambda(lambda x: tf.while_loop(
+      lambda i, _in, _out: i < _in.shape[-1], 
+      lambda i, _in, _out: (i + 1, _in, tf.concat([_out, tf.math.reduce_sum(_in[..., i:], axis = -1, keepdims = True)], axis = -1)), 
+      loop_vars = [0, x, tf.zeros((tf.shape(x)[0], 0), dtype = tf.float32)], shape_invariants = [tf.TensorShape([]), x.shape, tf.TensorShape([x.shape[0], None])])[2])(results); # s.shape = (batch, class_num)
   results = tf.keras.layers.Lambda(lambda x: x[0] / x[1])([results, s]); # results.shape = (batch, class_num)
   return tf.keras.Model(inputs = inputs, outputs = results);
 
