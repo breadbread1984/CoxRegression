@@ -52,7 +52,7 @@ def main():
       with log.as_default():
         tf.summary.scalar('test loss', test_loss.result(), step = optimizer.iterations);
   phm.save('PropHazardsModel.h5');
-    
+
 if __name__ == "__main__":
 
   assert tf.executing_eagerly();
