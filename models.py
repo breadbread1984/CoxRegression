@@ -32,7 +32,9 @@ if __name__ == "__main__":
   a = tf.constant(np.random.normal(size = (8, 10)));
   b = phm(a);
   print(b);
+  phm.save('phm.h5');
   l = tf.constant(np.random.randint(20, size = (8)));
   ll = LogLikelihood(20);
   c = ll([b,l]);
   print(c);
+  ll.save('ll.h5');
