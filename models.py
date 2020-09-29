@@ -6,7 +6,8 @@ import tensorflow as tf;
 def PropHazardsModel(dim_num, class_num):
 
   inputs = tf.keras.Input((dim_num,)); # inputs.shape = (batch, dim_num)
-  results = tf.keras.layers.Dense(units = class_num, use_bias = False, activation = tf.math.exp)(inputs); # results.shape = (batch, class_num)
+  results = tf.keras.layers.Dense(units = class_num, use_bias = False)(inputs); # results.shape = (batch, class_num)
+  results = tf.keras.layers.Lambda(lambda x: tf.math.exp(x))(results); # results.shape = (batch, class_num)
   def cumsum(i, _in, _out):
     s = tf.math.reduce_sum(_in[..., i:], axis = -1, keepdims = True); # sub.shape = (batch, 1)
     _out = tf.concat([_out, s], axis = -1); # _out.shape = (batch, i)
