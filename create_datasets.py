@@ -7,6 +7,19 @@ import pickle;
 import numpy as np;
 import tensorflow as tf;
 
+def parse_function(serialized_example):
+
+  feature = tf.io.parse_single_example(
+    serialized_example,
+    features = {
+      'data': tf.io.FixedLenFeature((399,), dtype = tf.float32),
+      'label': tf.io.FixedLenFeature((), dtype = tf.int64)
+    }
+  );
+  data = feature['data'];
+  label = feature['label'];
+  return data, label;
+
 def create_datasets():
 
   data = pd.read_csv(join('data', 'Brain_Integ_X.csv'), skiprows = [0], header = None);
@@ -23,6 +36,8 @@ def create_datasets():
   y = [labels.index(i) for i in y]; # from survival span to label
   with open('labels.pkl', 'wb') as f:
     f.write(pickle.dumps(labels));
+  print('feature dimension is %d' % x.shape[-1]);
+  print('there are %d distinct survival spans' % len(labels));
   # 2) divide data into training (252) and testing (107)
   idx = [i for i in range(len(y))];
   training_idx = np.random.choice(idx, size = 252, replace = False);
